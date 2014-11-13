@@ -1,0 +1,89 @@
+LFLL : Locked Free Linked List
+==============================
+
+SYNOPSIS
+HOW DOES IT WORK
+COMPILATION
+USAGE
+
+1. SYNOPSIS
+------------------------------
+LFLL is a standard linked list, that can be access by a multithread program in Read and Write
+without use of any mutex.
+
+If you don't use it in a multipro usage she's... useless ! :-)
+
+2. HOW DOES IT WORK
+------------------------------
+As you should know, it's not possible to access in R/W to the same ressource a the same time.
+This linked list use an processor atomic move that can't be done by two process at the same time
+
+A standard linked list look like that :
+
+|--->CELL1|--->CELL2|--->CELL3|--->CELL4|--->CELL5--->NULL
+
+In LFLL you add other auxilliary cells between two cells :
+
+|--->CELL1|--->AUX|--->CELL2|--->AUX|--->CELL3|--->AUX|--->CELL4|--->AUX|--->CELL5|--->AUX--->NULL
+
+  2 - Add a cell :
+
+    2.1 - Create a cell and is AUX
+   
+                       CELL6|--->AUX|--->
+		       
+|--->CELL1|--->AUX|--->CELL2|--->AUX|--->CELL3|--->AUX|--->CELL4|--->AUX|--->CELL5|--->AUX--->NULL
+
+    2.2 - You move the AUX pointer of the new cell to CELL where you want to add it :
+
+                       CELL6|--->AUX|-\
+		                       \
+|--->CELL1|--->AUX|--->CELL2|--->AUX|--->CELL3|--->AUX|--->CELL4|--->AUX|--->CELL5|--->AUX--->NULL
+
+    2.3 - you move the aux pointer of the previus cell to the new cell
+
+					CELL6|--->AUX|-\
+				       /		\
+|--->CELL1|--->AUX|--->CELL2|--->AUX|-/			 \->CELL3|--->AUX|--->CELL4|--->AUX|--->CELL5|--->AUX--->NULL
+
+As you can imagine, during all that move other process can continue to access to other
+elements of the list, without
+
+  3 - Remove a cell
+
+    3.1 - First, you detach the cell from the list, by moving the pointer of the pre cell to the cell aux :
+
+					CELL6|--->AUX|-\
+				       /		\
+|--->CELL1|--->AUX|-\  CELL2|-/->AUX|-/			 \->CELL3|--->AUX|--->CELL4|--->AUX|--->CELL5|--->AUX--->NULL
+                     \       /
+		      \-----/
+
+    NOTE : if you need to work on a cell, you must detach it BEFORE doing any action on the cell.
+    So you have no simultanuous access to that cell. The LFLL got DETACH and RE-ATTACH function.
+
+    3.2 - Second, you can free the cell
+
+					CELL6|--->AUX|-\
+				       /		\
+|--->CELL1|--->AUX|-\  	      /->AUX|-/			 \->CELL3|--->AUX|--->CELL4|--->AUX|--->CELL5|--->AUX--->NULL
+                     \       /
+                      \-----/
+
+
+As you can see, if you have 2 process that access at the same time one to add after the CELL2 and the second
+one, that remove the cell number 2, there is "no problem".
+
+If two process tries to remove at the same time the CELL2, one of them will first change (atomic) the prev cell aux pointer
+So if (prev_cell->next->next != cell)... it's already detach...
+
+3 - COMPILATION
+---------------
+
+cmake
+make
+make install
+
+4 - USAGE
+---------
+
