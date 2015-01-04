@@ -11,7 +11,7 @@ USAGE
 LFLL is a standard linked list, that can be access by a multithread program in Read and Write
 without use of any mutex.
 
-If you don't use it in a multipro usage she's... useless ! :-)
+If you don't use it in a multipro usage it's completly... useless ! :-)
 
 2. HOW DOES IT WORK
 ------------------------------
@@ -47,7 +47,7 @@ In LFLL you add other auxilliary cells between two cells :
 |--->CELL1|--->AUX|--->CELL2|--->AUX|-/			 \->CELL3|--->AUX|--->CELL4|--->AUX|--->CELL5|--->AUX--->NULL
 
 As you can imagine, during all that move other process can continue to access to other
-elements of the list, without
+elements of the list
 
   3 - Remove a cell
 
@@ -80,7 +80,7 @@ So if (prev_cell->next->next != cell)... it's already detach...
 3 - COMPILATION
 ---------------
 
-cmake
+cmake .
 make
 make install
 
