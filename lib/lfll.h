@@ -3,6 +3,8 @@
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 /*
 **
 */
@@ -36,7 +38,7 @@ void						lfll_print_list(lfll_t *, void (*)(void *));
 int						lfll_detach_cell(lfll_t *, lfll_t *);
 int						lfll_reattach_cell(lfll_t *, lfll_t *);
 void						lfll_free_elem(lfll_t *, void (*)());
-int						lfll_add_cell(lfll_t *, void *(*)());
+lfll_t						*lfll_add_cell(lfll_t *, void *(*)());
 lfll_t						*lfll_last_elem(lfll_t *);
 lfll_t						*lfll_last_cell(lfll_t *);
 int						lfll_list_size(lfll_t *);

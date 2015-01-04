@@ -137,22 +137,16 @@ void				lfll_free_elem(lfll_t *list, void (*destroy_func)(void *val))
   free(list);
 }
 
-int				lfll_add_cell(lfll_t *list, void *(*init_func)(void))
+lfll_t				*lfll_add_cell(lfll_t *list, void *(*init_func)(void))
 // Test on my mac (intel core i7 2.5ghz) tell around 12 500 000 add / second (without mall for val)
 {
   lfll_t			*new_elem;
 
   new_elem=lfll_init_cell(list->index+1);
   new_elem->next->next=list->next->next;
-  if (list->next->next != new_elem->next->next)
-    {
-      free(new_elem->next);
-      free(new_elem);
-      
-      return (0);
-    }
-    list->next->next=new_elem;
-    return (1);
+  list->next->next=new_elem;
+    
+  return (new_elem);
 }
 
 lfll_t				*lfll_last_elem(lfll_t *list)
