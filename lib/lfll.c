@@ -36,12 +36,16 @@ lfll_t				*lfll_init_size(int size, void *(*init_func)(void))
   do {
     prev=tmp;
     tmp=lfll_init_cell(i);
-    tmp->val=init_func();
-    if (!first)
-      first=tmp;
-    else
-      prev->next->next=tmp;
-    i++;
+	if (tmp) {
+      tmp->val=init_func();
+      if (!first)
+        first=tmp;
+      else if (prev->next)
+        prev->next->next=tmp;
+	  else
+	  	first->next=tmp;
+      i++;
+	 }
   } while (i <= size);
     
   return (first);
@@ -53,11 +57,11 @@ void				lfll_destroy_list(lfll_t *list, void (*destroy_func)(void *val))
 
   do
     {
-      tmp=list;
-      if (tmp->val)
+      tmp=list->next;
+      if (list->val)
 	destroy_func(list->val);
-      free(tmp);
-      list=list->next;
+      free(list);
+      list=tmp;
     } while (list);
 }
 
@@ -68,11 +72,10 @@ lfll_t				*lfll_init_cell(int index)
 
   if ((cell=malloc(sizeof(lfll_t))) == NULL)
     return NULL;
-  memset(cell, 0, sizeof(lfll_t));
   aux=lfll_init_aux();
   cell->index=index;
   cell->next=aux;
-  
+
   return (cell);
 }
 
@@ -82,8 +85,9 @@ lfll_t				*lfll_init_aux(void)
 
   if ((aux=malloc(sizeof(lfll_t))) == NULL)
     return NULL;
-  memset(aux, 0, sizeof(lfll_t));
-  
+  aux->index=0;
+  aux->val=0;
+  aux->next=0;
   return (aux);
 }
 
@@ -143,9 +147,11 @@ lfll_t				*lfll_add_cell(lfll_t *list, void *(*init_func)(void))
   lfll_t			*new_elem;
 
   new_elem=lfll_init_cell(list->index+1);
-  new_elem->next->next=list->next->next;
-  list->next->next=new_elem;
-    
+  if(new_elem) {
+  	new_elem->val=init_func();
+  	new_elem->next->next=list->next->next;
+  	list->next->next=new_elem;
+  }
   return (new_elem);
 }
 
@@ -161,6 +167,7 @@ lfll_t				*lfll_last_cell(lfll_t *list)
 {
   lfll_t			*last_cell;
   
+  last_cell=0;
   for ( ; list->next ; list=list->next)
     if (lfll_elem_type(list) == LFLL_ELEM_TYPE_CELL)
       last_cell=list;
